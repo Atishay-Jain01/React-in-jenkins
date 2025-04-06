@@ -10,7 +10,7 @@ pipeline {
         RESOURCE_GROUP = 'rg-azure-060425'
         APP_SERVICE_NAME = 'as-react-060425'   // Change this to your desired app service name
         AZURE_CLI_PATH = 'C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin'
-        SYSTEM_PATH = 'C:/Windows/System32'
+        SYSTEM_PATH = 'C:\\Windows\\System32'
         TERRAFORM_PATH = 'C:\\Users\\DELL\\Downloads\\terraform_1.11.3_windows_386'
     }
 
