@@ -39,9 +39,10 @@ pipeline {
         stage('Build React Application') {
             steps {
                 dir(REACT_APP_DIR) {
-                    bat 'set PATH=C:\\Program Files\\nodejs;%PATH%' // set Node.js path explicitly  
-                    bat 'npm install'
-                    bat 'npm run build'
+                    withEnv(["PATH=${NODE_PATH};${PATH}"]) {
+                        bat 'npm install'  
+                        bat 'npm run build'
+                    }
                     bat 'powershell Compress-Archive -Path "build\\*" -DestinationPath "ReactApp.zip" -Force'
                 }
             }
