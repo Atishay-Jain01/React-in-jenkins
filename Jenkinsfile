@@ -12,8 +12,6 @@ pipeline {
         AZURE_CLI_PATH = 'C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin'
         SYSTEM_PATH = 'C:/Windows/System32'
         TERRAFORM_PATH = 'C:\\Users\\DELL\\Downloads\\terraform_1.11.3_windows_386'
-        REACT_APP_DIR = 'react-jekins'  // Directory containing the React application
-        NODE_PATH = 'C:\\Program Files\\nodejs' // Add this line for Node.js  
     }
 
     stages {
@@ -42,7 +40,7 @@ pipeline {
 
         stage('Build React Application') {
             steps {
-                dir(REACT_APP_DIR) {
+                dir('react-jekins') {
                     bat 'npm install'  
                     bat 'npm run build'
                     bat 'powershell Compress-Archive -Path "build\\*" -DestinationPath "ReactApp.zip" -Force'
