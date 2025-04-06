@@ -1,6 +1,10 @@
 pipeline {
     agent any
-
+    
+    tools {
+        nodejs 'NodeJS'  // Use the NodeJS tool installer
+    }
+    
     environment {
         AZURE_CREDENTIALS_ID = 'azure-service-principal-react'
         RESOURCE_GROUP = 'rg-azure-060425'
