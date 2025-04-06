@@ -19,7 +19,7 @@ pipeline {
             steps {
                 dir('terraform') {
                     bat '''
-                        set PATH=%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
+                        set PATH=%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
                         terraform init
                     '''
                 }
