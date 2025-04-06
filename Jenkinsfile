@@ -1,59 +1,47 @@
 pipeline {
     agent any
-
     environment {
-
+        AZURE_CREDENTIALS_ID = 'azure-service-principal-react'
+        RESOURCE_GROUP = 'rg-azure-060425'
+        APP_SERVICE_NAME = 'as-react-060425'  // Change this to your desired app service name
     }
 
     stages {
-        stage('Clone Repo') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/yourusername/react-azure-deploy.git'
+                git branch: 'main', url: ''  // Change to your repo URL
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                dir('my-react-app') {
-                    bat 'npm install'
-                }
+                bat 'npm install'
             }
         }
 
-        stage('Build React App') {
+        stage('Build') {
             steps {
-                dir('my-react-app') {
-                    bat 'npm run build'
-                }
+                bat 'npm run build'
             }
         }
 
-        stage('Terraform Init') {
+        stage('Deploy') {
             steps {
-                dir('infra') {
-                    bat 'terraform init'
+                withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
+                    bat "az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID"
+                    bat "powershell Compress-Archive -Path ./build/* -DestinationPath ./build.zip -Force"
+                    bat "az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path ./build.zip --type zip"
                 }
             }
         }
+    }
 
-        stage('Terraform Apply') {
-            steps {
-                dir('infra') {
-                    bat 'terraform apply -auto-approve'
-                }
-            }
+    post {
+        success {
+            echo 'Deployment Successful!'
         }
-
-        stage('Deploy to Azure') {
-            steps {
-                dir('my-react-app') {
-                    script {
-                        def appName = "my-react-app-service"
-                        def rgName = "react-rg"
-                        bat "az webapp deploy --resource-group ${rgName} --name ${appName} --src-path build --type static"
-                    }
-                }
-            }
+        failure {
+            echo 'Deployment Failed!'
         }
     }
 }
