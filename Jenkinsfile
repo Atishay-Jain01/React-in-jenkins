@@ -19,8 +19,9 @@ pipeline {
             steps {
                 dir('terraform') {
                     // set PATH=%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
-
+                    echo %SYSTEM_PATH%
                     bat '''
+                        echo %SYSTEM_PATH%
                         terraform init
                     '''
                 }
