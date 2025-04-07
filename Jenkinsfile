@@ -9,18 +9,17 @@ pipeline {
         AZURE_CREDENTIALS_ID = 'azure-service-principal-react'
         RESOURCE_GROUP = 'rg-azure-060425'
         APP_SERVICE_NAME = 'as-react-060425'   // Change this to your desired app service name
-        // AZURE_CLI_PATH = 'C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin'
-        // SYSTEM_PATH = 'C:\\Windows\\System32'
-        // TERRAFORM_PATH = 'C:\\Users\\DELL\\Downloads\\terraform_1.11.3_windows_386'
+        AZURE_CLI_PATH = 'C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin'
+        SYSTEM_PATH = 'C:\\Windows\\System32'
+        TERRAFORM_PATH = 'C:\\Users\\DELL\\Downloads\\terraform_1.11.3_windows_386'
     }
 
     stages {
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
-                    // set PATH=%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
-                    echo 'SYSTEM_PATH: ' + System.getenv('SYSTEM_PATH')  // Using Groovy syntax to access environment variables
                     bat '''
+                        set PATH=%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
                         echo %SYSTEM_PATH%
                         terraform init
                     '''
@@ -31,8 +30,8 @@ pipeline {
         stage('Terraform Plan & Apply') {
             steps {
                 dir('terraform') {
-                    // set PATH=%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
                     bat '''
+                        set PATH=%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
                         terraform plan
                         terraform apply -auto-approve
                     '''
