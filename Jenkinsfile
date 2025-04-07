@@ -19,7 +19,7 @@ pipeline {
             steps {
                 dir('terraform') {
                     // set PATH=%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
-                    echo %SYSTEM_PATH%
+                    echo 'SYSTEM_PATH: ' + System.getenv('SYSTEM_PATH')  // Using Groovy syntax to access environment variables
                     bat '''
                         echo %SYSTEM_PATH%
                         terraform init
