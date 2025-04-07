@@ -18,11 +18,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
-                    bat '''
-                        set PATH=%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
-                        echo %SYSTEM_PATH%
-                        terraform init
-                    '''
+                    bat 'terraform init'
                 }
             }
         }
@@ -30,11 +26,8 @@ pipeline {
         stage('Terraform Plan & Apply') {
             steps {
                 dir('terraform') {
-                    bat '''
-                        set PATH=%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%
-                        terraform plan
-                        terraform apply -auto-approve
-                    '''
+                    bat 'terraform plan'
+                    bat 'terraform apply -auto-approve'
                 }
             }
         }
