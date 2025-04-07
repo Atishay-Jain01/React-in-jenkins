@@ -12,6 +12,7 @@ pipeline {
         AZURE_CLI_PATH = 'C:\\Program Files\\Microsoft SDKs\\Azure\\CLI2\\wbin'
         SYSTEM_PATH = 'C:\\Windows\\System32'
         TERRAFORM_PATH = 'C:\\Users\\DELL\\Downloads\\terraform_1.11.3_windows_386'
+        REACT_APP_DIR = 'react-jekins/build'  // Define your React app directory here
     }
 
     stages {
@@ -48,6 +49,7 @@ pipeline {
             steps {
                 withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
                     bat 'set PATH=%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%'
+                    bat 'echo %WORKSPACE%\\%REACT_APP_DIR%\\ReactApp.zip'  // Debugging line to check path
                     bat 'az webapp deploy --resource-group %RESOURCE_GROUP% --name %APP_SERVICE_NAME% --src-path %WORKSPACE%\\%REACT_APP_DIR%\\ReactApp.zip --type zip'
                 }
             }
