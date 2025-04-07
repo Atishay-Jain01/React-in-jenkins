@@ -19,7 +19,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
-                    bat 'set PATH=%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%'
+                    bat 'set PATH=C:\\Windows\\System32;%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%'
                     bat 'terraform init'
                 }
             }
@@ -28,7 +28,7 @@ pipeline {
         stage('Terraform Plan & Apply') {
             steps {
                 dir('terraform') {
-                    bat 'set PATH=C:\Windows\System32;%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%'
+                    bat 'set PATH=C:\\Windows\\System32;%AZURE_CLI_PATH%;%SYSTEM_PATH%;%TERRAFORM_PATH%;%PATH%'
                     bat 'terraform plan'
                     bat 'terraform apply -auto-approve'
                 }
