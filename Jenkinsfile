@@ -12,20 +12,20 @@ pipeline {
     }  
 
     stages {  
-        stage('Test BAT Availability') {  
+        stage('Test PowerShell Availability') {  
             steps {  
-                bat 'echo Testing BAT availability'  
+                powershell 'Write-Host "Testing PowerShell availability"'  
             }  
         }  
 
         stage('Terraform Init') {  
             steps {  
                 dir('terraform') {  
-                    // Use BAT to run Terraform  
+                    // Use PowerShell to run Terraform  
                     // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'  
-                    bat """  
-                        timeout /t 2  
-                        echo "Terraform Init in progress..."  
+                    powershell """  
+                        Start-Sleep -Seconds 2  
+                        Write-Host "Terraform Init in progress..."  
                     """  
                 }  
             }  
@@ -34,17 +34,17 @@ pipeline {
         stage('Terraform Plan & Apply') {  
             steps {  
                 dir('terraform') {  
-                    // Use BAT to run Terraform Plan and Apply  
+                    // Use PowerShell to run Terraform Plan and Apply  
                     // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'  
-                    bat """  
-                        timeout /t 5  
-                        echo "Terraform Plan..."  
+                    powershell """  
+                        Start-Sleep -Seconds 5  
+                        Write-Host "Terraform Plan..."  
                     """  
                     // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'  
                     // terraform apply -auto-approve  
-                    bat """  
-                        timeout /t 10  
-                        echo "Terraform Apply..."  
+                    powershell """  
+                        Start-Sleep -Seconds 10  
+                        Write-Host "Terraform Apply..."  
                     """  
                 }  
             }  
@@ -53,14 +53,14 @@ pipeline {
         stage('Build React Application') {  
             steps {  
                 dir('react-jekins') {  
-                    // Use BAT for npm commands  
-                    bat """  
-                        timeout /t 12  
-                        echo "Building React Application..."  
+                    // Use PowerShell for npm commands  
+                    powershell """  
+                        Start-Sleep -Seconds 12  
+                        Write-Host "Building React Application..."  
+                        npm install  
+                        npm run build  
+                        Compress-Archive -Path "build\\*" -DestinationPath "ReactApp.zip" -Force  
                     """  
-                    // powershell 'npm install'  
-                    // powershell 'npm run build'  
-                    // powershell 'Compress-Archive -Path "build\\*" -DestinationPath "ReactApp.zip" -Force'  
                 }  
             }  
         }  
@@ -68,12 +68,12 @@ pipeline {
         stage('Deploy to Azure App Service') {  
             steps {  
                 withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {  
-                    // Use BAT to deploy to Azure  
+                    // Use PowerShell to deploy to Azure  
                     // $env:PATH = '$AZURE_CLI_PATH;$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'  
                     // az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path $WORKSPACE\\$REACT_APP_DIR\\ReactApp.zip --type zip  
-                    bat """  
-                        timeout /t 2  
-                        echo "Deploying to Azure App Service..."  
+                    powershell """  
+                        Start-Sleep -Seconds 2  
+                        Write-Host "Deploying to Azure App Service..."  
                     """  
                 }  
             }  
