@@ -11,6 +11,13 @@ pipeline {
         REACT_APP_DIR = 'react-jekins/build'  // Define your React app directory here  
     }  
 
+    stages {  
+        stage('Test BAT Availability') {  
+            steps {  
+                bat 'echo Testing BAT availability'  
+            }  
+        }  
+
         stage('Terraform Init') {  
             steps {  
                 dir('terraform') {  
@@ -18,6 +25,7 @@ pipeline {
                     // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'  
                     bat """  
                         timeout /t 2  
+                        echo "Terraform Init in progress..."  
                     """  
                 }  
             }  
@@ -30,11 +38,13 @@ pipeline {
                     // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'  
                     bat """  
                         timeout /t 5  
+                        echo "Terraform Plan..."  
                     """  
                     // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'  
                     // terraform apply -auto-approve  
                     bat """  
                         timeout /t 10  
+                        echo "Terraform Apply..."  
                     """  
                 }  
             }  
@@ -46,6 +56,7 @@ pipeline {
                     // Use BAT for npm commands  
                     bat """  
                         timeout /t 12  
+                        echo "Building React Application..."  
                     """  
                     // powershell 'npm install'  
                     // powershell 'npm run build'  
@@ -62,6 +73,7 @@ pipeline {
                     // az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path $WORKSPACE\\$REACT_APP_DIR\\ReactApp.zip --type zip  
                     bat """  
                         timeout /t 2  
+                        echo "Deploying to Azure App Service..."  
                     """  
                 }  
             }  
