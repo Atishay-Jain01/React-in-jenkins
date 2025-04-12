@@ -91,75 +91,90 @@
 // }  
 
 // NEW
-pipeline {  
-    agent any  
+pipeline {
+    agent any
+    environment {
+        AZURE_CREDENTIALS_ID = 'azure-service-principal-react'
+        RESOURCE_GROUP       = 'WebServiceRG'
+        APP_SERVICE_NAME     = 'AryanRathoreWebApp0412'
+        TF_WORKING_DIR       = '.'
+    }
 
-    environment {  
-        AZURE_CREDENTIALS_ID = 'jenkins-sp'  
-        RESOURCE_GROUP = 'rg-react'  
-        APP_SERVICE_NAME = 'reactwebappjenkins838796'  
-    }  
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Atishay-Jain01/React-in-jenkins.git'
+            }
+        }
+         stage('Terraform Init') {
+            steps {
+                withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
+                    bat """
+                    echo "Navigating to Terraform Directory: %TF_WORKING_DIR%"
+                    cd %TF_WORKING_DIR%
+                    echo "Initializing Terraform..."
+                    terraform init
+                    """
+                }
+            }
+        }
 
-    stages {  
-        stage('Checkout Code') {  
-            steps {  
-                echo 'Simulating code checkout...'  
-                bat 'timeout /t 20 >nul' // 20 sec  
-            }  
-        }  
+        stage('Terraform Plan') {
+    steps {
+        withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
+            bat """
+            echo "Navigating to Terraform Directory: %TF_WORKING_DIR%"
+            cd %TF_WORKING_DIR%
+            terraform plan -out=tfplan
+            """
+        }
+    }
+}
 
-        stage('Terraform Init') {  
-            steps {  
-                echo 'Initializing Terraform...'  
-                bat 'timeout /t 40 >nul' // 40 sec  
-            }  
-        }  
 
-        stage('Terraform Import') {  
-            steps {  
-                echo 'Importing existing Azure resources...'  
-                bat 'timeout /t 50 >nul' // 50 sec  
-            }  
-        }  
+        stage('Terraform Apply') {
+    steps {
+        withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
+            bat """
+            echo "Navigating to Terraform Directory: %TF_WORKING_DIR%"
+            cd %TF_WORKING_DIR%
+            echo "Applying Terraform Plan..."
+            terraform apply -auto-approve tfplan
+            """
+        }
+    }
+}
 
-        stage('Terraform Plan & Apply') {  
-            steps {  
-                echo 'Planning and applying Terraform changes...'  
-                bat 'timeout /t 80 >nul' // 80 sec  
-            }  
-        }  
+    
 
-        stage('Install Dependencies & Build React') {  
-            steps {  
-                echo 'Installing React dependencies and building...'  
-                bat 'timeout /t 70 >nul' // 70 sec  
-            }  
-        }  
+        stage('Build') {
+    steps {
+        bat 'npm install'        // Install dependencies
+        bat 'npm run build'      // Build the production-ready React app
+    }
+}
 
-        stage('Check Build Folder') {  
-            steps {  
-                echo 'Checking for build output folder...'  
-                bat 'timeout /t 40 >nul' // 40 sec  
-            }  
-        }  
 
-        stage('Deploy to Azure using az webapp deploy') {  
-            steps {  
-                echo 'Simulating deployment to Azure App Service...'  
-                bat 'timeout /t 90 >nul' // 90 sec  
-            }  
-        }  
-    }  
+       stage('Deploy') {
+    steps {
+        withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
+            bat """
+            powershell Compress-Archive -Path build/* -DestinationPath build.zip -Force
+            az webapp deploy --resource-group %RESOURCE_GROUP% --name %APP_SERVICE_NAME% --src-path build.zip --type zip
 
-    post {  
-        success {  
-            echo '✅ Fake React App Deployed Successfully!'  
-        }  
-        failure {  
-            echo '❌ Something went wrong (but this should never fail 😉).'  
-        }  
-        always {  
-            cleanWs()  
-        }  
-    }  
-}  
+            """
+        }
+    }
+}
+
+    }
+
+    post {
+        success {
+            echo 'Deployment Successful!'
+        }
+        failure {
+            echo 'Deployment Failed!'
+        }
+    }
+}
