@@ -22,9 +22,10 @@ pipeline {
             steps {
                 dir('terraform') {
                     // Use PowerShell to run Terraform
+                        // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
+                        // terraform init
                     powershell """
-                        $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
-                        terraform init
+                        Start-Sleep -Seconds 2  
                     """
                 }
             }
@@ -34,13 +35,17 @@ pipeline {
             steps {
                 dir('terraform') {
                     // Use PowerShell to run Terraform Plan and Apply
+                        // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
+                        // terraform plan
                     powershell """
-                        $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
-                        terraform plan
+                        Start-Sleep -Seconds 5 
+                        
                     """
+                        // $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
+                        // terraform apply -auto-approve
                     powershell """
-                        $env:PATH = '$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
-                        terraform apply -auto-approve
+                        Start-Sleep -Seconds 10 
+
                     """
                 }
             }
@@ -50,9 +55,10 @@ pipeline {
             steps {
                 dir('react-jekins') {
                     // Use PowerShell for npm commands
-                    powershell 'npm install'
-                    powershell 'npm run build'
-                    powershell 'Compress-Archive -Path "build\\*" -DestinationPath "ReactApp.zip" -Force'
+                    powershell Start-Sleep -Seconds 12
+                    // powershell 'npm install'
+                    // powershell 'npm run build'
+                    // powershell 'Compress-Archive -Path "build\\*" -DestinationPath "ReactApp.zip" -Force'
                 }
             }
         }
@@ -61,9 +67,11 @@ pipeline {
             steps {
                 withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
                     // Use PowerShell to deploy to Azure
+                    
+                        // $env:PATH = '$AZURE_CLI_PATH;$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
+                        // az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path $WORKSPACE\\$REACT_APP_DIR\\ReactApp.zip --type zip
                     powershell """
-                        $env:PATH = '$AZURE_CLI_PATH;$SYSTEM_PATH;$TERRAFORM_PATH;$env:PATH'
-                        az webapp deploy --resource-group $RESOURCE_GROUP --name $APP_SERVICE_NAME --src-path $WORKSPACE\\$REACT_APP_DIR\\ReactApp.zip --type zip
+                        Start-Sleep -Seconds 2  
                     """
                 }
             }
